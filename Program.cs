@@ -5,8 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 var log = app.Logger;
 
-var _matterportKey = Environment.GetEnvironmentVariable("DMW_KEY") ?? "Vcjo3RdTDKm";
-var _matterportPath = Environment.GetEnvironmentVariable("DMW_PATH") ?? "C:\\Users\\Caelan\\Downloads\\lancaster_virtual_tour\\downloads\\Vcjo3RdTDKm";
+var _matterportKey = Environment.GetEnvironmentVariable("DMW_KEY");
+var _matterportPath = Environment.GetEnvironmentVariable("DMW_PATH");
+var _serverBaseUrl = Environment.GetEnvironmentVariable("DMW_BASEURL");
 
 log.LogInformation("Initialising Docker Matterport Web");
 log.LogInformation("MatterportKey = {}", _matterportKey);
@@ -34,7 +35,7 @@ app.Map("/api/mp/models/graph", ([FromQuery] string operation, [FromQuery] strin
         return Results.File(defaultFilePath, "application/json");
     }
 
-    var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
+    var baseUrl = _serverBaseUrl ?? $"{context.Request.Scheme}://{context.Request.Host}";
     var modifiedFilePath = Path.Combine(_matterportPath, $"api/mp/models/graph_{operation}.modified.json");
     if (File.Exists(modifiedFilePath))
     {
